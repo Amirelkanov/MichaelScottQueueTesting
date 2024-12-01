@@ -5,6 +5,18 @@ import org.jetbrains.kotlinx.lincheck.check
 import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
 import org.jetbrains.kotlinx.lincheck.strategy.stress.StressOptions
 import org.junit.jupiter.api.Test
+import java.util.*
+
+class SequentialQueue {
+    private val s = LinkedList<Int>()
+
+    fun enqueue(x: Int) {
+        s.add(x) // add вообще Boolean возвращает
+    }
+
+    // pool(): Returns: the head of this list, or null if this list is empty
+    fun dequeue(): Int = s.poll() ?: throw EmptyException("Can't get a value from empty queue.")
+}
 
 class MSQueueTest {
     private val q = MSQueue()
@@ -50,4 +62,9 @@ class MSQueueTest {
             .actorsAfter(2)
             .iterations(5)
             .check(this::class)
+
+    @Test
+    fun sequentialSpecificationTest() = StressOptions()
+        .sequentialSpecification(SequentialQueue::class.java)
+        .check(this::class)
 }
